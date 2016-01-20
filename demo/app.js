@@ -28,8 +28,8 @@ angular.module('demoApp', ['owsFastBind'])
 	  	$scope.test_class = 'demo_' + new Date().getTime();
 	  	$scope.test_show = !$scope.test_show;
 	  	$scope.test_hide = !$scope.test_hide;
-	  	OwsFbUpdate("test"); //or this to update
-	}, 1000);
+	  	OwsFbUpdate("test", 1000); //or this to update
+	}, 100);
 
   }, 500);
 
