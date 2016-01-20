@@ -30,5 +30,11 @@
     "src",
     "Gruntfile.js",
     "package.json"
+  ],
+  "main": [
+    "dist/ows-fast-bind.css",
+    "dist/ows-fast-bind.js",
+    "dist/ows-fast-bind.min.css",
+    "dist/ows-fast-bind.min.js"
   ]
 }
