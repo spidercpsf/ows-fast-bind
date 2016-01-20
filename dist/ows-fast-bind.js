@@ -11,7 +11,7 @@
   'use strict';
 
   // src/js/helper.module.js
-  var myModule = angular.module('ows-fast-bind', []);
+  var myModule = angular.module('owsFastBind', []);
 
   // src/js/directive.directive.js
   function bindChannelSimple(parse, scope, expression, attr, callback) {

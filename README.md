@@ -16,6 +16,8 @@ Start the demo server with `grunt demo` and go to [http://localhost:8000/demo/](
 How to Use !
 ------------
 
+add 'owsFastBind' to app.js
+
 #### owsNgBind
     <span ows-ng-bind="test" ows-channel="'test'"></span>
 #### owsNgBindHtml    
