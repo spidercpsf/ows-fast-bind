@@ -15,6 +15,9 @@
 <body ng-app="demoApp">
   <!-- <div my-directive></div> -->
   <div ows-fast-bind-global-init ng-controller="DemoController">
+    <span ows-broadcaster="test" ows-channel="'auto'" ows-broadcast-interval="2000">This is broadcaster element</span>
+    <span>owNgBind autto update with ows-broadcaster content</span></br>
+    <span ows-ng-bind="test" ows-channel="'auto'"></span></br>
     <span>owNgBind content</span></br>
     <span ows-ng-bind="test" ows-channel="'test'"></span></br>
     <!-- <span>owsNgBindHtml content</span></br>

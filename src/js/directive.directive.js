@@ -3550,6 +3550,21 @@ var owsNgIfDirective = ['$animate', '$parse', function($animate, $parse) {
   };
 }];
 
+var owsBroadcaster = ['$rootScope', '$timeout', '$parse', function($rootScope, $timeout, $parse) {
+  return {
+    restrict: 'AC',
+    link: function($scope, $element, $attr, ctrl, $transclude) {
+        var update_channel = $parse($attr.owsChannel)($scope);
+        var broadcast_interval = $parse($attr.owsBroadcastInterval)($scope) || 500;
+        console.log("RegisterBroadcaster:" + $attr.owsChannel + " -> " + update_channel + " with " + broadcast_interval + " ms");
+
+        $scope.$watch($attr.owsBroadcaster, function ngIfWatchAction(value) {
+          window.OwsFbUpdate(update_channel, broadcast_interval);//default 500ms
+        });
+    }
+  };
+}];
+
 var owsFastBindGlobalInit = ['$rootScope', '$timeout', function($rootScope, $timeout) {
   return {
     restrict: 'AC',
@@ -3588,6 +3603,7 @@ var owsFastBindGlobalInit = ['$rootScope', '$timeout', function($rootScope, $tim
 /* global myModule */
 myModule
     .directive('owsFastBindGlobalInit', owsFastBindGlobalInit)
+    .directive('owsBroadcaster', owsBroadcaster)
     .directive('owsNgBind', owsNgBindDirective)
     .directive('owsNgBindHtml', owsNgBindHtmlDirective)
     .directive('owsNgClass', owsNgClassDirective)
