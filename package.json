@@ -28,5 +28,12 @@
     "grunt-angular-toolbox": "^1.0.2",
     "grunt-cli": "~0.1.13",
     "grunt-codeclimate-reporter": "^1.0.0"
+  },
+  "jspm": {
+    "format": "global",
+    "directories": {
+      "lib": "dist"
+    },
+    "main": "ows-fast-bind"
   }
 }
