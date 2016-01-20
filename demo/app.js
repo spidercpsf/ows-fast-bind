@@ -1,6 +1,9 @@
 angular.module('demoApp', ['owsFastBind'])
 
 .controller('DemoController', ['$rootScope', '$scope', '$interval', '$timeout', function($rootScope, $scope, $interval, $timeout) {
+  $scope.data = {
+  	test: 1
+  }
   $scope.test = 1;
   $scope.test_class = 'demo';
   $scope.test_show = true;
@@ -9,7 +12,7 @@ angular.module('demoApp', ['owsFastBind'])
   $scope.list = [];
 
   $timeout(function(){
-  	$scope.test = new Date().getTime();
+  	$scope.data.test = $scope.test = new Date().getTime();
   	$scope.test_html =  '<p>' + new Date().getTime() + "</p>";
   	$scope.test_class = 'demo_' + new Date().getTime();
   	for(var i = 0; i < 10000; i++){
@@ -23,7 +26,7 @@ angular.module('demoApp', ['owsFastBind'])
 	  	$scope.list.push(new Date().getTime()+1);
 	  	$scope.list.push(new Date().getTime()+2);
 	  	$scope.list.push(new Date().getTime()+3);
-	  	$scope.test = new Date().getTime();
+	  	$scope.data.test = $scope.test = new Date().getTime();
 	  	$scope.test_html =  '<p>' + new Date().getTime() + "</p>";
 	  	$scope.test_class = 'demo_' + new Date().getTime();
 	  	$scope.test_show = !$scope.test_show;
