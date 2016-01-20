@@ -3558,13 +3558,37 @@
     };
   }];
 
-  var owsFastBindGlobalInit = ['$rootScope', function($rootScope) {
+  var owsFastBindGlobalInit = ['$rootScope', '$timeout', function($rootScope, $timeout) {
     return {
       restrict: 'AC',
       link: function(scope, element, attr) {
-         window.OwsFbUpdate = function(channel){
-            $rootScope.$broadcast(channel);
-         }
+          var last_time_mapper = {};
+          var timeout_mapper = {};
+          window.OwsFbUpdate = function(channel, interval){
+              interval = interval || -1;//force update
+              var now_time = new Date().getTime();
+              //console.log(interval, now_time);
+              //console.log("Checking first:", last_time_mapper[channel], interval);
+              if(typeof last_time_mapper[channel] != 'undefined' && interval > 0){
+                var delta = now_time - last_time_mapper[channel];
+                //console.log("Checking delta time:", delta, interval);
+                if(delta < interval && timeout_mapper[channel] == false){
+                  timeout_mapper[channel] = true;
+                  $timeout(function(){
+                      timeout_mapper[channel] = false;
+                      console.log("*******Auto Update channel after delay:" + channel);
+                      window.OwsFbUpdate(channel);
+                  }, interval);
+                  //console.log("Waiting Update after :" + interval);                
+                }
+                if(delta < interval) return;
+              }
+
+              //console.log("*******Update channel:" + channel);
+              $rootScope.$broadcast(channel);
+              last_time_mapper[channel] = now_time;
+              timeout_mapper[channel] = false;
+          }
       }
     };
   }];myModule
