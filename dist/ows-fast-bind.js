@@ -16,6 +16,7 @@
   // src/js/directive.directive.js
   function bindChannelSimple(parse, scope, expression, attr, callback) {
       var update_channel = parse(attr.owsChannel)(scope);
+      console.log("RegisterChannel:" + attr.owsChannel + " -> " + update_channel, scope);
 
       function onUpdate(event, args) {
           //console.log("Channel updated");
@@ -28,6 +29,8 @@
 
   function bindChannel(parse, scope, expression, attr, callback) {
       var update_channel = parse(attr.owsChannel)(scope);
+      console.log("RegisterChannel:" + attr.owsChannel + " -> " + update_channel, scope);
+
       function onUpdate(event, args) {
           // console.log("Channel updated");
           var new_value = parse(expression)(scope);
@@ -41,6 +44,7 @@
   function bindChannelFlex(parse, scope, expression, attr, callback) {
       var update_channel = parse(attr.owsChannel)(scope);
       var old_value;
+      console.log("RegisterChannel:" + attr.owsChannel + " -> " + update_channel, scope);
 
       function onUpdate(event, args) {
           // console.log("Channel updated");
@@ -3552,7 +3556,19 @@
           });
       }
     };
+  }];
+
+  var owsFastBindGlobalInit = ['$rootScope', function($rootScope) {
+    return {
+      restrict: 'AC',
+      link: function(scope, element, attr) {
+         window.OwsFbUpdate = function(channel){
+            $rootScope.$broadcast(channel);
+         }
+      }
+    };
   }];myModule
+      .directive('owsFastBindGlobalInit', owsFastBindGlobalInit)
       .directive('owsNgBind', owsNgBindDirective)
       .directive('owsNgBindHtml', owsNgBindHtmlDirective)
       .directive('owsNgClass', owsNgClassDirective)
