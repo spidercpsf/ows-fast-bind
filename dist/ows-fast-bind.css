@@ -1,0 +1,14 @@
+/*!
+ * ows-fast-bind v1.0.0
+ * https://github.com/spidercpsf/ows-fast-bind
+ *
+ * Optimized binding data with event-driven for AngularJS
+ *
+ * Copyright 2016, Giang Minh
+ * Released under the MIT license
+ */
+[my-directive] {
+  background: blue;
+  height: 50px;
+  width: 50px;
+}

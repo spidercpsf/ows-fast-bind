@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>My angular demo</title>
+  <link rel="stylesheet" type="text/css" href="demo/style.css" />
+  <!-- bower:css -->
+  <!-- endbower -->
+  <!-- injector:scss -->
+  <!-- endinjector -->
+  <!-- injector:less -->
+  <link rel="stylesheet" href="/src/less/style.css">
+  <!-- endinjector -->
+</head>
+<body ng-app="demoApp">
+  <!-- <div my-directive></div> -->
+  <div ng-controller="DemoController">
+    <span>owNgBind content</span></br>
+    <span ows-ng-bind="test" ows-channel="'test'"></span></br>
+    <!-- <span>owsNgBindHtml content</span></br>
+    <span ows-ng-bind-html="test_html" ows-channel="'test'"></span></br> -->
+    <span>owsNgClass content</span></br>
+    <span ows-ng-class="test_class" ows-channel="'test'"></span></br>
+    <span>owsNgShow content</span></br>
+    <span ows-ng-show="test_show" ows-channel="'test'">Show content</span></br>
+    <span>owsNgHide content</span></br>
+    <span ows-ng-hide="test_hide" ows-channel="'test'">Hide content</span></br>
+    <span>owsNgIf content</span></br>
+    <span ows-ng-if="test_show" ows-channel="'test'">If content</span></br>
+    <!-- <span>owsNgRepeat content</span></br>
+    <div ows-ng-repeat-only-push="i in list track by i" ows-channel="'test'">
+      <span ows-ng-bind="i + 10" ows-channel="'test'+$index"></span></br>
+    </div></br> -->
+  </div>
+  <!-- bower:js -->
+  <script src="../bower_components/angular/angular.js"></script>
+  <!-- endbower -->
+  <!-- injector:js -->
+  <script src="/src/js/helper.module.js"></script>
+  <script src="/src/js/directive.directive.js"></script>
+  <script src="/ng_templates.js"></script>
+  <!-- endinjector -->
+  <script type="text/javascript" src="demo/app.js"></script>
+</body>
+</html>
