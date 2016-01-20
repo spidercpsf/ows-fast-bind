@@ -37,7 +37,10 @@ add 'owsFastBind' to app.js
 
 #### How to tell owsFastBind update
 	Using broadcast to tell whenever update the directive
-		$rootScope.$broadcast("test");
+		1. using $rootScope.$broadcast(CHANNEL_ID);
+		2. inclulde ows-fast-bind-global-init directive to root dom and run
+			run OwsFbUpdate(CHANNEL_ID);
+
 	After that, the direct will be automatic checking new value of variable and update the dom	
 
 Make it yours

@@ -1,4 +1,4 @@
-angular.module('demoApp', ['ows-fast-bind'])
+angular.module('demoApp', ['owsFastBind'])
 
 .controller('DemoController', ['$rootScope', '$scope', '$interval', '$timeout', function($rootScope, $scope, $interval, $timeout) {
   $scope.test = 1;
@@ -17,7 +17,7 @@ angular.module('demoApp', ['ows-fast-bind'])
   	}
   	$scope.test_show = !$scope.test_show;
   	$scope.test_hide = !$scope.test_hide;
-  	$rootScope.$broadcast("test");
+  	$rootScope.$broadcast("test"); //using this to update
 
   	$interval(function(){
 	  	$scope.list.push(new Date().getTime()+1);
@@ -28,7 +28,7 @@ angular.module('demoApp', ['ows-fast-bind'])
 	  	$scope.test_class = 'demo_' + new Date().getTime();
 	  	$scope.test_show = !$scope.test_show;
 	  	$scope.test_hide = !$scope.test_hide;
-	  	$rootScope.$broadcast("test");
+	  	OwsFbUpdate("test"); //or this to update
 	}, 1000);
 
   }, 500);
