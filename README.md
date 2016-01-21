@@ -35,11 +35,26 @@ add 'owsFastBind' to app.js
       <span ows-ng-bind="i + 10" ows-channel="'test'+$index"></span></br>
     </div>
 
+#### ***ows-channel is option with all control directives. Default is "default-channel" if not defined
+
 #### How to tell owsFastBind update
 	Using broadcast to tell whenever update the directive
 		1. using $rootScope.$broadcast(CHANNEL_ID);
 		2. inclulde ows-fast-bind-global-init directive to root dom and run
 			run OwsFbUpdate(CHANNEL_ID, interval_threshold);
+		3. Using broadcaster (global)
+			include: 
+				ows-broadcaster="variable" ows-broadcaster-interval="update-between-broadcast" ows-channel="'CHANNEL_NAME'"
+			in there:
+				ows-channel(required): broadcast to this channel
+				ows-broadcaster-interval(option): default is 500 (500ms)
+
+		4. Using Notifier (only child element)
+			include to parrent element:
+				ows-notifier="variable" ows-notify-interval="update-between-notify" ows-channel="'CHANNEL_NAME'"
+			in there:
+				ows-channel(option): broadcast to this channel, default value is same with other control directive: "default-channel"
+				ows-broadcaster-interval(option): default is 500 (500ms)				
 
 	After that, the direct will be automatic checking new value of variable and update the dom	
 

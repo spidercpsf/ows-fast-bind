@@ -12,10 +12,12 @@
   <link rel="stylesheet" href="/src/less/style.css">
   <!-- endinjector -->
 </head>
-<body ng-app="demoApp">
+<body ng-app="demoApp" ows-fast-bind-global-init>
   <!-- <div my-directive></div> -->
-  <div ows-fast-bind-global-init ng-controller="DemoController">
-    <span ows-broadcaster="data.test" ows-channel="'auto'" ows-broadcast-interval="2000">This is broadcaster element</span>
+
+  <div ng-controller="DemoController">
+    <span>Using Broadcast method<span><br>
+    <span ows-broadcaster="data.test" ows-channel="'auto'" ows-broadcast-interval="2000">This is broadcaster element</span><br>
     <span>owNgBind autto update with ows-broadcaster content</span></br>
     <span ows-ng-bind="data.test" ows-channel="'auto'"></span></br>
     <span>owNgBind content</span></br>
@@ -35,6 +37,24 @@
       <span ows-ng-bind="i + 10" ows-channel="'test'+$index"></span></br>
     </div></br> -->
   </div>
+  <br>
+  ------------------------------<br>
+  <br>
+
+  <div ng-controller="DemoController" ows-notifier="data.test">
+    <span>Using Notifier method<span><br>
+    <span>This is broadcaster element</span><br>
+    <span>owNgBind autto update with ows-notifier for child content</span></br>
+    <span ows-ng-bind="data.test"></span></br>
+  </div>
+
+  <div ng-controller="DemoController">
+    <span>WithoutUsing Notifier method<span><br>
+    <span>This is broadcaster element</span><br>
+    <span>owNgBind autto update with ows-notifier for child content</span></br>
+    <span ows-ng-bind="data.test"></span></br>
+  </div>
+
   <!-- bower:js -->
   <script src="../bower_components/angular/angular.js"></script>
   <!-- endbower -->

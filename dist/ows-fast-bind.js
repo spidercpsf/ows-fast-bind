@@ -14,8 +14,30 @@
   var myModule = angular.module('owsFastBind', []);
 
   // src/js/directive.directive.js
+  var DEFAULT_CHANNEL = "default-channel";
+
+  var last_time = {};
+  var count_timeout = {};
+  var globalHandler = function handler(channel, notify_interval, scope, newValue, oldValue) {
+      last_time[channel]      = last_time[channel]      || 0;
+      count_timeout[channel]  = count_timeout[channel]  || null;
+      var now_time = new Date().getTime();
+      var delta_time = now_time - last_time[channel];
+      if (delta_time > notify_interval) {
+          last_time[channel] = now_time;
+          scope.$broadcast(channel, newValue, oldValue);
+      } else {
+          if (count_timeout[channel] == null) {
+              count_timeout[channel] = setTimeout(function() {
+                  globalHandler(channel, notify_interval, scope, newValue, oldValue);
+                  count_timeout[channel] = null;
+              }, notify_interval - delta_time + 10); //adding more 10s for ensuring delta_time > notify_interval
+          }
+      }
+  };
+
   function bindChannelSimple(parse, scope, expression, attr, callback) {
-      var update_channel = parse(attr.owsChannel)(scope);
+      var update_channel = parse(attr.owsChannel)(scope) || DEFAULT_CHANNEL;
       console.log("RegisterChannel:" + attr.owsChannel + " -> " + update_channel, scope);
 
       function onUpdate(event, args) {
@@ -28,7 +50,7 @@
   }
 
   function bindChannel(parse, scope, expression, attr, callback) {
-      var update_channel = parse(attr.owsChannel)(scope);
+      var update_channel = parse(attr.owsChannel)(scope) || DEFAULT_CHANNEL;
       console.log("RegisterChannel:" + attr.owsChannel + " -> " + update_channel, scope);
 
       function onUpdate(event, args) {
@@ -42,7 +64,7 @@
   }
 
   function bindChannelFlex(parse, scope, expression, attr, callback) {
-      var update_channel = parse(attr.owsChannel)(scope);
+      var update_channel = parse(attr.owsChannel)(scope) || DEFAULT_CHANNEL;
       var old_value;
       console.log("RegisterChannel:" + attr.owsChannel + " -> " + update_channel, scope);
 
@@ -3558,7 +3580,14 @@
     };
   }];
 
-  var owsBroadcaster = ['$rootScope', '$timeout', '$parse', function($rootScope, $timeout, $parse) {
+  var owsNotifier = ['$rootScope', '$timeout', '$parse', function($rootScope, $timeout, $parse) {
+    var Mode = {
+        SHALLOW: 'shallow',
+        DEEP: 'deep',
+        COLLECtION: 'collection'
+    };
+    var DEFAULT_MODE = Mode.SHALLOW;
+
     return {
       restrict: 'AC',
       link: function($scope, $element, $attr, ctrl, $transclude) {
@@ -3566,9 +3595,105 @@
           var broadcast_interval = $parse($attr.owsBroadcastInterval)($scope) || 500;
           console.log("RegisterBroadcaster:" + $attr.owsChannel + " -> " + update_channel + " with " + broadcast_interval + " ms");
 
-          $scope.$watch($attr.owsBroadcaster, function ngIfWatchAction(value) {
+          $scope.$watch($attr.owsNotifier, function ngIfWatchAction(value) {
             window.OwsFbUpdate(update_channel, broadcast_interval);//default 500ms
           });
+      }
+    };
+  }];
+
+  var owsBroadcaster = ['$rootScope', '$timeout', '$parse', function($rootScope, $timeout, $parse) {
+    var Mode = {
+        SHALLOW: 'shallow',
+        DEEP: 'deep',
+        COLLECtION: 'collection'
+    };
+    var DEFAULT_MODE = Mode.SHALLOW;
+
+    return {
+      restrict: 'AC',
+      link: function($scope, $element, $attr, ctrl, $transclude) {
+          var update_channel = $parse($attr.owsChannel)($scope) || null;
+          var monitor_mode = $parse($attr.owsMode)($scope) || DEFAULT_MODE;
+          var broadcast_interval = $parse($attr.owsBroadcastInterval)($scope) || 500;
+
+          //check condition
+          if(update_channel == null){
+            throw Error('ows-broadcaster: missing ows-channel value');
+          }
+
+          console.log("RegisterBroadcaster:" + $attr.owsChannel + " -> " + update_channel + ":" + monitor_mode + " with " + broadcast_interval + " ms");
+
+          var handler = function handler(newValue, oldValue, scope) {
+              globalHandler(update_channel, broadcast_interval, $rootScope, newValue, oldValue);
+          };
+
+          switch (monitor_mode) {
+            case Mode.SHALLOW:
+            case Mode.DEEP:
+              $scope.$watch($attr.owsBroadcaster, handler, monitor_mode === Mode.DEEP);
+              break;
+            case Mode.COLLECTION:
+                scope.$watchCollection($attr.owsBroadcaster, handler);
+                break;
+              default:
+                throw Error('fast-bind-notifier: Invalid ows-mode "' + monitor_mode + '"');
+          }
+      }
+    };
+  }];
+
+  var owsNotifier = ['$rootScope', '$timeout', '$parse', function($rootScope, $timeout, $parse) {
+    var Mode = {
+        SHALLOW: 'shallow',
+        DEEP: 'deep',
+        COLLECtION: 'collection'
+    };
+    var DEFAULT_MODE = Mode.SHALLOW;
+
+    return {
+      restrict: 'AC',
+      link: function($scope, $element, $attr, ctrl, $transclude) {
+          var update_channel = $parse($attr.owsChannel)($scope) || DEFAULT_CHANNEL;
+          var monitor_mode = $parse($attr.owsMode)($scope) || DEFAULT_MODE;
+          var notify_interval = $parse($attr.owsNotifyInterval)($scope) || 500;
+
+          //check condition
+          if(update_channel == null){
+            throw Error('ows-broadcaster: missing ows-channel value');
+          }
+
+          console.log("RegisterBroadcaster:" + update_channel + ":" + monitor_mode);
+
+          var last_time = 0;
+          var count_timeout = null;
+          var handler = function handler(newValue, oldValue, scope) {
+              var now_time = new Date().getTime();
+              var delta_time = now_time - last_time;
+              if(delta_time > notify_interval){
+                last_time = now_time;
+                scope.$broadcast(update_channel, newValue, oldValue);
+              }else{
+                if(count_timeout == null){
+                  count_timeout = $timeout(function(){
+                    handler(newValue, oldValue, scope);
+                    count_timeout = null;
+                  }, notify_interval - delta_time + 10); //adding more 10s for ensuring delta_time > notify_interval
+                }
+              }
+          };
+
+          switch (monitor_mode) {
+            case Mode.SHALLOW:
+            case Mode.DEEP:
+              $scope.$watch($attr.owsNotifier, handler, monitor_mode === Mode.DEEP);
+              break;
+            case Mode.COLLECTION:
+                scope.$watchCollection($attr.owsNotifier, handler);
+                break;
+              default:
+                throw Error('fast-bind-notifier: Invalid ows-mode "' + monitor_mode + '"');
+          }
       }
     };
   }];
@@ -3577,37 +3702,14 @@
     return {
       restrict: 'AC',
       link: function(scope, element, attr) {
-          var last_time_mapper = {};
-          var timeout_mapper = {};
           window.OwsFbUpdate = function(channel, interval){
-              interval = interval || -1;//force update
-              var now_time = new Date().getTime();
-              //console.log(interval, now_time);
-              //console.log("Checking first:", last_time_mapper[channel], interval);
-              if(typeof last_time_mapper[channel] != 'undefined' && interval > 0){
-                var delta = now_time - last_time_mapper[channel];
-                //console.log("Checking delta time:", delta, interval);
-                if(delta < interval && timeout_mapper[channel] == false){
-                  timeout_mapper[channel] = true;
-                  $timeout(function(){
-                      timeout_mapper[channel] = false;
-                      console.log("*******Auto Update channel after delay:" + channel);
-                      window.OwsFbUpdate(channel);
-                  }, interval);
-                  //console.log("Waiting Update after :" + interval);                
-                }
-                if(delta < interval) return;
-              }
-
-              //console.log("*******Update channel:" + channel);
-              $rootScope.$broadcast(channel);
-              last_time_mapper[channel] = now_time;
-              timeout_mapper[channel] = false;
+              globalHandler(channel, interval, $rootScope, 1, 1);
           }
       }
     };
   }];myModule
       .directive('owsFastBindGlobalInit', owsFastBindGlobalInit)
+      .directive('owsNotifier', owsNotifier)
       .directive('owsBroadcaster', owsBroadcaster)
       .directive('owsNgBind', owsNgBindDirective)
       .directive('owsNgBindHtml', owsNgBindHtmlDirective)
